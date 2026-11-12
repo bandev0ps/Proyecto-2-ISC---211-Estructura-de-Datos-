@@ -29,7 +29,7 @@ public class Cursor<T> {
             nuevaMemoria[i] = memoria[i];
         }
 
-        for (int i = tamañoViejo; i < nuevoTamaño - 1; i++) {
+        for (int i = tamañoViejo; i < nuevoTamaño; i++) {
             nuevaMemoria[i] = new Nodo<>(null);
             nuevaMemoria[i].setIndice(i);
         }
