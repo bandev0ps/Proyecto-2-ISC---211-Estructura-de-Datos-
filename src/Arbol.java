@@ -138,36 +138,33 @@ public class Arbol<T> {
     // ---------- MOSTRAR NIVELES ----------
 
     public void MOSTRAR_NIVELES() throws RangoInvalidoException {
-        if (raiz == -1) {
-            System.out.println("El arbol esta vacio");
-            return;
-        }
-
-        Queue<Integer> cola = new LinkedList<>();
-        cola.add(raiz);
-        int nivel = 0;
-
-        while (!cola.isEmpty()) {
-            int cantidad = cola.size();          // cuántos nodos tiene este nivel
-            StringBuilder linea = new StringBuilder("Nivel " + nivel + ": ");
-
-            for (int i = 0; i < cantidad; i++) {
-                int actual = cola.remove();
-                Nodo<T> nodo = memoria.getNodo(actual);
-                linea.append(nodo.getEtiqueta()).append("  ");
-
-                // encola todos los hijos: hijoIzq y luego sus hermanos derechos
-                int hijo = nodo.getHijoIzq();
-                while (hijo != -1) {
-                    cola.add(hijo);
-                    hijo = memoria.getNodo(hijo).getHermanoDer();
-                }
-            }
-
-            System.out.println(linea);
-            nivel++;
-        }
+    if (RAIZ() == -1) {
+        System.out.println("El arbol esta vacio");
+        return;
     }
+    Queue<Integer> cola = new LinkedList<>();
+    cola.add(RAIZ());
+    int nivel = 0;
+
+    while (!cola.isEmpty()) {
+        int cantidad = cola.size();                 // nodos de este nivel
+        StringBuilder linea = new StringBuilder("Nivel " + nivel + ": ");
+
+        for (int i = 0; i < cantidad; i++) {
+            int actual = cola.remove();
+            linea.append(ETIQUETA(actual)).append("  ");
+
+            // encola todos los hijos: el más izquierdo y luego sus hermanos
+            int hijo = HIJO_MAS_IZQ(actual);
+            while (hijo != -1) {
+                cola.add(hijo);
+                hijo = HERMANO_DER(hijo);
+            }
+        }
+        System.out.println(linea);
+        nivel++;
+    }
+}
 
     //---------------------------------------------------------------------------------------------
 
@@ -175,18 +172,18 @@ public class Arbol<T> {
 
     // --- METODOS PARA ORDEN PREVIO ---
 
-    private void orden_previo(int nodo, ArrayList<T> lista) throws RangoInvalidoException{
-        if (nodo == -1) {return;}
+    private void orden_previo(int nodo, ArrayList<T> lista) throws RangoInvalidoException {
+        if (nodo == -1 || ETIQUETA(nodo) == null) { return; }
 
-        var papunodo = memoria.getNodo(nodo);
-        if (papunodo == null || papunodo.getEtiqueta() == null) {return;}
-        
-        lista.add(papunodo.getEtiqueta());
-        orden_previo(papunodo.getHijoIzq(), lista);
-        orden_previo(papunodo.getHermanoDer(), lista);
+        lista.add(ETIQUETA(nodo));
+        int hijo = HIJO_MAS_IZQ(nodo);
+        while (hijo != -1) {
+            orden_previo(hijo, lista);
+            hijo = HERMANO_DER(hijo);
+        }
     }
 
-    public ArrayList<T> ORD_PRE(int nodo) throws RangoInvalidoException{
+    public ArrayList<T> ORD_PRE(int nodo) throws RangoInvalidoException {
         ArrayList<T> orden = new ArrayList<T>();
         orden_previo(nodo, orden);
         return orden;
@@ -194,61 +191,46 @@ public class Arbol<T> {
 
     // --- METODOS PARA ORDEN SIMETRICO ---
 
-    private void orden_Simetrico(int nodo, ArrayList<T> Lista) throws RangoInvalidoException{
-        if (nodo == -1) {return;}
+    private void orden_Simetrico(int nodo, ArrayList<T> lista) throws RangoInvalidoException {
+        if (nodo == -1 || ETIQUETA(nodo) == null) { return; }
 
-        var papupronodo = memoria.getNodo(nodo);
-        if (papupronodo == null || papupronodo.getEtiqueta() == null) {return;}
-        int hijoActual = papupronodo.getHijoIzq();
-
-        if (hijoActual == -1){
-            Lista.add(papupronodo.getEtiqueta());
+        int primerHijo = HIJO_MAS_IZQ(nodo);
+        if (primerHijo == -1) {
+            lista.add(ETIQUETA(nodo));
             return;
         }
 
-        // Visita simétricamente el primer hijo
-        orden_Simetrico(hijoActual, Lista);
-
-        // Visitar raíz actual
-        Lista.add(papupronodo.getEtiqueta());
-
-        hijoActual = memoria.getNodo(hijoActual).getHermanoDer();
-        while (hijoActual != -1){
-            orden_Simetrico(hijoActual, Lista);
-            hijoActual = memoria.getNodo(hijoActual).getHermanoDer();
+        orden_Simetrico(primerHijo, lista);
+        lista.add(ETIQUETA(nodo));
+        int hijo = HERMANO_DER(primerHijo);
+        while (hijo != -1) {
+            orden_Simetrico(hijo, lista);
+            hijo = HERMANO_DER(hijo);
         }
     }
 
-    public ArrayList<T> ORD_SIM(int nodo) throws RangoInvalidoException{
-         ArrayList<T> orden = new ArrayList<T>();
-         orden_Simetrico(nodo, orden);
-         return orden;
+    public ArrayList<T> ORD_SIM(int nodo) throws RangoInvalidoException {
+        ArrayList<T> orden = new ArrayList<T>();
+        orden_Simetrico(nodo, orden);
+        return orden;
     }
 
     // --- METODOS PARA ORDEN POSTERIOR ---
 
-    private void orden_posterior(int nodo, ArrayList<T> lista) throws RangoInvalidoException{
-        if (nodo == -1){return;}
+    private void orden_posterior(int nodo, ArrayList<T> lista) throws RangoInvalidoException {
+        if (nodo == -1 || ETIQUETA(nodo) == null) { return; }
 
-        var papuhackernodo = memoria.getNodo(nodo);
-        if (papuhackernodo == null || papuhackernodo.getEtiqueta() == null) { return; }
-
-        // Visitar todos los hijos de izquierda a derecha
-        int hijoActual = papuhackernodo.getHijoIzq();
-        while (hijoActual != -1){
-            orden_posterior(hijoActual, lista);
-            hijoActual = memoria.getNodo(hijoActual).getHermanoDer();
+        int hijo = HIJO_MAS_IZQ(nodo);
+        while (hijo != -1) {
+            orden_posterior(hijo, lista);
+            hijo = HERMANO_DER(hijo);
         }
-        
-        // Por último la raíz
-        lista.add(papuhackernodo.getEtiqueta());
+        lista.add(ETIQUETA(nodo));
     }
 
-    public ArrayList<T> ORD_POST(int nodo) throws RangoInvalidoException{
+    public ArrayList<T> ORD_POST(int nodo) throws RangoInvalidoException {
         ArrayList<T> orden = new ArrayList<T>();
         orden_posterior(nodo, orden);
         return orden;
     }
-
-    //---------------------------------------------------------------------------------------------
 }
