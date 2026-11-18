@@ -1,10 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class DibujoArbol extends JPanel {
     private Arbol<String> arbol;
     private int raizCursor;
+    private Map<Integer, Integer> nivelesY = new TreeMap<>();
 
     public DibujoArbol(Arbol<String> arbol, int raizCursor) {
         this.arbol = arbol;
@@ -21,13 +24,28 @@ public class DibujoArbol extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
+        nivelesY.clear();
         
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         try {
             if (raizCursor != -1) {
                 int anchoPanel = getWidth();
-                dibujarSubarbol(g2d, raizCursor, anchoPanel / 2, 50, anchoPanel / 3);
+                dibujarSubarbol(g2d, raizCursor, anchoPanel / 2, 50, anchoPanel / 3, 0);
+                int radio = 22;
+                for (Map.Entry<Integer, Integer> entry : nivelesY.entrySet()) {
+                    int yCentroNodo = entry.getValue();
+                    int nivel = entry.getKey();
+                    int yLinea = yCentroNodo + radio;
+
+                    g2d.setColor(Color.black); 
+                    g2d.setStroke(new BasicStroke(1f));
+                    g2d.drawLine(70, yLinea, getWidth() - 30, yLinea);
+
+                    g2d.setColor(Color.black);
+                    g2d.setFont(new Font("Arial", Font.BOLD, 12));
+                    g2d.drawString("Nivel " + nivel, 10, yLinea + 4);
+                }
             } else {
                 g2d.setColor(Color.GRAY);
                 g2d.setFont(new Font("Arial", Font.ITALIC, 14));
@@ -39,8 +57,9 @@ public class DibujoArbol extends JPanel {
         }
     }
 
-    private void dibujarSubarbol(Graphics2D g2d, int nodoCursor, int x, int y, int anchoDisponible) {
+    private void dibujarSubarbol(Graphics2D g2d, int nodoCursor, int x, int y, int anchoDisponible, int nivel) {
         if (nodoCursor == -1) return;
+        nivelesY.put(nivel, y);
 
         try {
             ArrayList<String> datosNodo = null;
@@ -84,7 +103,7 @@ public class DibujoArbol extends JPanel {
                     g2d.setStroke(new BasicStroke(2));
                     g2d.drawLine(x, y, xHijoCalculado, yHijo);
 
-                    dibujarSubarbol(g2d, hijoCursorId, xHijoCalculado, yHijo, desplazamientoX);
+                    dibujarSubarbol(g2d, hijoCursorId, xHijoCalculado, yHijo, desplazamientoX, nivel + 1);
                 }
             }
 
