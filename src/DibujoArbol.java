@@ -9,7 +9,7 @@ public class DibujoArbol extends JPanel {
     public DibujoArbol(Arbol<String> arbol, int raizCursor) {
         this.arbol = arbol;
         this.raizCursor = raizCursor;
-        setBackground(Color.WHITE); // Fondo blanco limpio
+        setBackground(Color.WHITE); 
     }
 
     public void actualizarArbol(int nuevaRaizCursor) {
@@ -80,12 +80,10 @@ public class DibujoArbol extends JPanel {
                     int hijoCursorId = listaHijos.get(i);
                     int xHijoCalculado = inicioX + (i * desplazamientoX);
                     
-                    // Línea conectora gris elegante
                     g2d.setColor(new Color(120, 144, 156));
                     g2d.setStroke(new BasicStroke(2));
                     g2d.drawLine(x, y, xHijoCalculado, yHijo);
 
-                    // Llamada recursiva para los hijos
                     dibujarSubarbol(g2d, hijoCursorId, xHijoCalculado, yHijo, desplazamientoX);
                 }
             }
