@@ -119,10 +119,10 @@ public class Arbol<T> {
         orden_posterior(nodo,orden);
         return orden;
     }
-}
+
 
 //OPERACION PADRE
-public int PADRE(int nodo){
+public int PADRE(int nodo)throws RangoInvalidoException{
     memoria.getNodo(nodo);
     if (nodo==raiz||nodo==-1) {return -1;}
     return buscarPadre(raiz,nodo);
@@ -187,4 +187,4 @@ public void MOSTRAR_NIVELES() throws RangoInvalidoException {
         System.out.println(linea);
         nivel++;
     }
-}
+}}
