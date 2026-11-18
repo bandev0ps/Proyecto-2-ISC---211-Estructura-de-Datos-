@@ -31,7 +31,17 @@ public class Main {
             System.out.println("\nHijo mas izquierdo de la raiz: " + arbolito.ETIQUETA(hijoIzq));
             var hermanoDer = arbolito.HERMANO_DER(hijoIzq);
             System.out.println("Hermano derecho del hijo mas izquierdo: " + arbolito.ETIQUETA(hermanoDer));
-            
+
+             SwingUtilities.invokeLater(() -> {
+                JFrame ventana = new JFrame("Visualizador de Árbol General - Estructura de Datos");
+                ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                ventana.setSize(950, 650);
+                ventana.setLocationRelativeTo(null);
+                DibujoArbol panelDibujo = new DibujoArbol(arbolito, arbolito.RAIZ());
+                
+                ventana.add(panelDibujo);
+                ventana.setVisible(true);
+            });
         } catch (RangoInvalidoException e) {
             System.out.println(e.getMessage());
         }
