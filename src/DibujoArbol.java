@@ -80,7 +80,7 @@ public class DibujoArbol extends JPanel {
                     int hijoCursorId = listaHijos.get(i);
                     int xHijoCalculado = inicioX + (i * desplazamientoX);
                     
-                    g2d.setColor(new Color(120, 144, 156));
+                    g2d.setColor(Color.BLACK);
                     g2d.setStroke(new BasicStroke(2));
                     g2d.drawLine(x, y, xHijoCalculado, yHijo);
 
@@ -89,10 +89,10 @@ public class DibujoArbol extends JPanel {
             }
 
             int radio = 22;
-            g2d.setColor(new Color(33, 150, 243));
+            g2d.setColor(new Color(76, 175, 80));
             g2d.fillOval(x - radio, y - radio, radio * 2, radio * 2);
             
-            g2d.setColor(new Color(13, 71, 161));
+            g2d.setColor(new Color(46, 125, 50));
             g2d.setStroke(new BasicStroke(2));
             g2d.drawOval(x - radio, y - radio, radio * 2, radio * 2);
 
