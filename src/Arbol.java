@@ -23,7 +23,7 @@ public class Arbol<T> {
     // --- OPERACION CREA ---
 
     // CASO BASE
-    public int CREA0(T etiqueta){
+    public int CREA(T etiqueta){
         Nodo<T> nuevoNodo = new Nodo<T>(etiqueta);
 
         memoria.insertarNodo(nuevoNodo);
