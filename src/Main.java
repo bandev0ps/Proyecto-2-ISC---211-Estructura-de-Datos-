@@ -7,8 +7,8 @@ public class Main {
 
         try {
             Arbol<String> arbolito = new Arbol<String>();
-            arbolito.CREA("Pebbles", arbolito.CREA("Pedro", arbolito.CREA0("Ed"), arbolito.CREA0("Edna")), 
-            arbolito.CREA("Vilma", arbolito.CREA("Perla")));
+            arbolito.CREA("Raiz", arbolito.CREA("Hola", arbolito.CREA("Oablo"), arbolito.CREA("Vilma")),
+            arbolito.CREA("B"),arbolito.CREA("E",arbolito.CREA("G",arbolito.CREA("I")),arbolito.CREA("H")),arbolito.CREA("F"));
 
             System.out.println("Raiz: " + arbolito.RAIZ());
 
@@ -35,16 +35,14 @@ public class Main {
             var hermanoDer = arbolito.HERMANO_DER(hijoIzq);
             System.out.println("Hermano derecho del hijo mas izquierdo: " + arbolito.ETIQUETA(hermanoDer));
 
-            SwingUtilities.invokeLater(() -> {
+             SwingUtilities.invokeLater(() -> {
                 JFrame ventana = new JFrame("Visualizador de Árbol General - Estructura de Datos");
                 ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 ventana.setSize(950, 650);
                 ventana.setLocationRelativeTo(null);
                 DibujoArbol panelDibujo = new DibujoArbol(arbolito, arbolito.RAIZ());
-                JScrollPane scrollPane = new JScrollPane(panelDibujo);
-                ventana.add(scrollPane, BorderLayout.CENTER);
-
-                //ventana.add(panelDibujo);
+                
+                ventana.add(panelDibujo);
                 ventana.setVisible(true);
             });
         } catch (RangoInvalidoException e) {
