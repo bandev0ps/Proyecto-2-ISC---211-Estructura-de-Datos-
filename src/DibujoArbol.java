@@ -164,8 +164,8 @@ public class DibujoArbol extends JPanel {
                 String etiquetaNodo = nodos.get(i);
                 int idxNodo = obtenerIndicePorEtiquetaSeguro(etiquetaNodo);
 
-                String hijoStr = "N/A";
-                String hermStr = "N/A";
+                String hijoStr = "-1";
+                String hermStr = "-1";
 
                 if (idxNodo != -1) {
                     int idxHijo = arbol.HIJO_MAS_IZQ(idxNodo);
