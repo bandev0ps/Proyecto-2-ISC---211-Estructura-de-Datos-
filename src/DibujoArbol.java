@@ -14,6 +14,7 @@ public class DibujoArbol extends JPanel {
         this.arbol = arbol;
         this.raizCursor = raizCursor;
         setBackground(Color.WHITE); 
+        setPreferredSize(new Dimension(900, 750));
     }
 
     public void actualizarArbol(int nuevaRaizCursor) {
@@ -50,6 +51,13 @@ public class DibujoArbol extends JPanel {
                 }
 
                 dibujarCursorDebajo(g2d, maxYArbol + 60);
+
+                int altoNecesario = maxYArbol + 60 + 310 + 7*24;
+                if (getPreferredSize().height != altoNecesario) {
+                    setPreferredSize(new Dimension(Math.max(getWidth(), 800), altoNecesario));
+                    revalidate();
+                }
+
             } else {
                 g2d.setColor(Color.GRAY);
                 g2d.setFont(new Font("Arial", Font.ITALIC, 14));
@@ -136,84 +144,118 @@ public class DibujoArbol extends JPanel {
     }
 
     private void dibujarCursorDebajo(Graphics2D g2d, int yInicio) {
-        try {
-            ArrayList<String> nodos = arbol.ORD_PRE(raizCursor);
-            if (nodos == null || nodos.isEmpty()) return;
+            try {
+                Object cursorObj = obtenerCursorSeguro();
+                if (cursorObj == null) return;
 
-            int xInicio = 70;
-            int colNodo = 70;
-            int colHijo = 190;
-            int colHerm = 330;
-            int anchoTabla = 400;
-            int altoFila = 24;
+                int tamanoArreglo = obtenerTamanoArregloCursorSeguro();
+                if (tamanoArreglo <= 0) return;
 
-            g2d.setColor(Color.BLACK);
-            g2d.setFont(new Font("Arial", Font.BOLD, 12));
+                int anchoTabla = 480;
+                int altoFila = 24;
+                int xInicio = (getWidth() - anchoTabla) / 2;
 
-            int yCabecera = yInicio;
-            g2d.drawRect(xInicio, yCabecera, anchoTabla, altoFila);
-            g2d.drawString("NODO", colNodo + 8, yCabecera + 16);
-            g2d.drawString("HIJO_MAS_IZQ", colHijo + 8, yCabecera + 16);
-            g2d.drawString("HERMANO_DER", colHerm + 8, yCabecera + 16);
+                // INDICE | HIJO_IZQ | DATO | HERMANO_DER
+                int colIndice = xInicio;
+                int colHijo = xInicio + 75;
+                int colDato = xInicio + 195;
+                int colHerm = xInicio + 325;
 
-            g2d.drawLine(colHijo, yCabecera, colHijo, yCabecera + altoFila);
-            g2d.drawLine(colHerm, yCabecera, colHerm, yCabecera + altoFila);
+                FontMetrics fmTitulo = g2d.getFontMetrics(new Font("Arial", Font.BOLD, 14));
+                g2d.setFont(new Font("Arial", Font.BOLD, 14));
+                g2d.setColor(new Color(33, 37, 41));
 
-            g2d.setFont(new Font("Arial", Font.PLAIN, 12));
-            for (int i = 0; i < nodos.size(); i++) {
-                String etiquetaNodo = nodos.get(i);
-                int idxNodo = obtenerIndicePorEtiquetaSeguro(etiquetaNodo);
+                
+                int indiceRaiz = arbol.RAIZ();
+                String tituloCursor = "CURSOR  |  RAIZ: " + indiceRaiz;
+                int xTituloCursor = (getWidth() - fmTitulo.stringWidth(tituloCursor)) / 2;
+                g2d.drawString(tituloCursor, xTituloCursor, yInicio - 8);
 
-                String hijoStr = "-1";
-                String hermStr = "-1";
+                g2d.setColor(Color.BLACK);
+                g2d.setFont(new Font("Arial", Font.BOLD, 12));
 
-                if (idxNodo != -1) {
-                    int idxHijo = arbol.HIJO_MAS_IZQ(idxNodo);
-                    if (idxHijo != -1) {
-                        String etiqHijo = arbol.ETIQUETA(idxHijo);
-                        if (etiqHijo != null) {
-                            hijoStr = etiqHijo;
-                        }
-                    }
+                int yCabecera = yInicio;
+                g2d.drawRect(xInicio, yCabecera, anchoTabla, altoFila);
+                g2d.drawString("i", colIndice + 8, yCabecera + 16);
+                g2d.drawString("ETIQUETA", colDato + 8, yCabecera + 16);
+                g2d.drawString("HIJO_IZQ", colHijo + 8, yCabecera + 16);
+                g2d.drawString("HERMANO_DER", colHerm + 8, yCabecera + 16);
 
-                    int idxHerm = arbol.HERMANO_DER(idxNodo);
-                    if (idxHerm != -1) {
-                        String etiqHerm = arbol.ETIQUETA(idxHerm);
-                        if (etiqHerm != null) {
-                            hermStr = etiqHerm;
-                        }
+                g2d.drawLine(colDato, yCabecera, colDato, yCabecera + altoFila);
+                g2d.drawLine(colHijo, yCabecera, colHijo, yCabecera + altoFila);
+                g2d.drawLine(colHerm, yCabecera, colHerm, yCabecera + altoFila);
+
+                g2d.setFont(new Font("Arial", Font.PLAIN, 12));
+
+                int ultimoIndiceOcupado = -1;
+                for (int i = 0; i < tamanoArreglo; i++) {
+                    Nodo<String> n = obtenerNodoEnPosicionCursorSeguro(cursorObj, i);
+                    if (n != null && n.getEtiqueta() != null) {
+                        ultimoIndiceOcupado = i;
                     }
                 }
+                int limiteFilas = ultimoIndiceOcupado + 1;
 
-                int yFila = yCabecera + ((i + 1) * altoFila);
-                g2d.drawRect(xInicio, yFila, anchoTabla, altoFila);
-                g2d.drawString(etiquetaNodo, colNodo + 8, yFila + 16);
-                g2d.drawString(hijoStr, colHijo + 8, yFila + 16);
-                g2d.drawString(hermStr, colHerm + 8, yFila + 16);
+                for (int i = 0; i < limiteFilas; i++) {
+                    Nodo<String> nodoActual = obtenerNodoEnPosicionCursorSeguro(cursorObj, i);
 
-                g2d.drawLine(colHijo, yFila, colHijo, yFila + altoFila);
-                g2d.drawLine(colHerm, yFila, colHerm, yFila + altoFila);
+                    String hijoStr = "-1";
+                    String datoStr = "null";
+                    String hermStr = "-1";
+
+                    if (nodoActual != null) {
+                        if (nodoActual.getEtiqueta() != null) {
+                            datoStr = nodoActual.getEtiqueta();
+                        }
+
+                        hijoStr = String.valueOf(nodoActual.getHijoIzq());
+                        hermStr = String.valueOf(nodoActual.getHermanoDer());
+                    }
+
+                    int yFila = yCabecera + ((i + 1) * altoFila);
+                    g2d.drawRect(xInicio, yFila, anchoTabla, altoFila);
+                    g2d.drawString(String.valueOf(i), colIndice + 8, yFila + 16);
+                    g2d.drawString(datoStr, colDato + 8, yFila + 16);
+                    g2d.drawString(hijoStr, colHijo + 8, yFila + 16);
+                    g2d.drawString(hermStr, colHerm + 8, yFila + 16);
+                    
+                    g2d.drawLine(colDato, yFila, colDato, yFila + altoFila);
+                    g2d.drawLine(colHijo, yFila, colHijo, yFila + altoFila);
+                    g2d.drawLine(colHerm, yFila, colHerm, yFila + altoFila);
+                }
+
+                int yTituloPruebas = yCabecera + ((tamanoArreglo + 1) * altoFila) + 28;
+
+                g2d.setFont(new Font("Arial", Font.BOLD, 14));
+                g2d.setColor(new Color(33, 37, 41));
+                String tituloPruebas = "PRUEBAS";
+                int xTituloPruebas = (getWidth() - fmTitulo.stringWidth(tituloPruebas)) / 2;
+                g2d.drawString(tituloPruebas, xTituloPruebas, yTituloPruebas);
+
+                int yRecorridos = yTituloPruebas + 22;
+                g2d.setColor(Color.BLACK);
+                g2d.setFont(new Font("Arial", Font.BOLD, 12));
+
+                ArrayList<String> pre = arbol.ORD_PRE(raizCursor);
+                String lineaPre = "Orden_Prev => " + pre;
+                g2d.drawString(lineaPre, (getWidth() - g2d.getFontMetrics().stringWidth(lineaPre)) / 2, yRecorridos);
+
+                ArrayList<String> sim = arbol.ORD_SIM(raizCursor);
+                String lineaSim = "Orden_Sim => " + sim;
+                g2d.drawString(lineaSim, (getWidth() - g2d.getFontMetrics().stringWidth(lineaSim)) / 2, yRecorridos + 20);
+
+                ArrayList<String> pos = arbol.ORD_POST(raizCursor);
+                String lineaPos = "Orden_Pos => " + pos;
+                g2d.drawString(lineaPos, (getWidth() - g2d.getFontMetrics().stringWidth(lineaPos)) / 2, yRecorridos + 40);
+
+                String lineaNiv = "Niveles del Arbol => " + nivelesY.size();
+                g2d.drawString(lineaNiv, (getWidth() - g2d.getFontMetrics().stringWidth(lineaNiv)) / 2, yRecorridos + 60);
+
+            } catch (Throwable e) {
+                g2d.setColor(Color.RED);
+                g2d.drawString("Error tabla: " + e.getMessage(), 70, yInicio + 20);
             }
-
-            int yRecorridos = yCabecera + ((nodos.size() + 2) * altoFila);
-            g2d.setFont(new Font("Arial", Font.BOLD, 12));
-
-            ArrayList<String> pre = arbol.ORD_PRE(raizCursor);
-            g2d.drawString("Orden_Prev => " + pre, xInicio, yRecorridos);
-
-            ArrayList<String> sim = arbol.ORD_SIM(raizCursor);
-            g2d.drawString("Orden_Sim => " + sim, xInicio, yRecorridos + 20);
-
-            ArrayList<String> pos = arbol.ORD_POST(raizCursor);
-            g2d.drawString("Orden_Pos => " + pos, xInicio, yRecorridos + 40);
-
-            g2d.drawString("Niveles del Arbol => " + nivelesY.size(), xInicio, yRecorridos + 60);
-
-        } catch (Throwable e) {
-            g2d.setColor(Color.RED);
-            g2d.drawString("Error tabla: " + e.getMessage(), 70, yInicio + 20);
         }
-    }
 
     private int obtenerIndicePorEtiquetaSeguro(String etiqueta) {
         try {
@@ -240,6 +282,45 @@ public class DibujoArbol extends JPanel {
             return nodo != null ? nodo.getHermanoDer() : -1;
         } catch (Exception e) {
             return -1;
+        }
+    }
+
+    private Object obtenerCursorSeguro() {
+        try {
+            java.lang.reflect.Field campoMemoria = Arbol.class.getDeclaredField("memoria");
+            campoMemoria.setAccessible(true);
+            return campoMemoria.get(arbol);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private int obtenerTamanoArregloCursorSeguro() {
+        try {
+            Object cursorObj = obtenerCursorSeguro();
+            if (cursorObj == null) return 0;
+
+            java.lang.reflect.Field campoArreglo = cursorObj.getClass().getDeclaredField("memoria");
+            campoArreglo.setAccessible(true);
+            Object[] arreglo = (Object[]) campoArreglo.get(cursorObj);
+            return arreglo != null ? arreglo.length : 0;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Nodo<String> obtenerNodoEnPosicionCursorSeguro(Object cursorObj, int posicion) {
+        try {
+            java.lang.reflect.Field campoArreglo = cursorObj.getClass().getDeclaredField("memoria");
+            campoArreglo.setAccessible(true);
+            Object[] arreglo = (Object[]) campoArreglo.get(cursorObj);
+            if (arreglo != null && posicion >= 0 && posicion < arreglo.length) {
+                return (Nodo<String>) arreglo[posicion];
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
         }
     }
 }
