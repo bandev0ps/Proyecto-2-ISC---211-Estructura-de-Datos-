@@ -7,8 +7,15 @@ public class Main {
 
         try {
             Arbol<String> arbolito = new Arbol<String>();
-            arbolito.CREA("Pebbles", arbolito.CREA("Pedro", arbolito.CREA0("Ed"), arbolito.CREA0("Edna")), 
-            arbolito.CREA("Vilma", arbolito.CREA("Perla")));
+            //arbolito.CREA("Pebbles", arbolito.CREA("Pedro", arbolito.CREA0("Ed"), arbolito.CREA0("Edna")),
+            //arbolito.CREA("Vilma", arbolito.CREA("Perla")));
+
+            arbolito.CREA("z", arbolito.CREA("X",arbolito.CREA0("y"),arbolito.CREA("R",
+                    arbolito.CREA0("Q"),arbolito.CREA0("G"))),arbolito.CREA("L",arbolito.CREA0("S")),arbolito.CREA0("M"),
+            arbolito.CREA("K",arbolito.CREA0("T"),arbolito.CREA("U",arbolito.CREA0("F"),arbolito.CREA0("V"),
+                    arbolito.CREA0("E"), arbolito.CREA("D", arbolito.CREA0("A"), arbolito.CREA0("B"), arbolito.CREA0("C"))), arbolito.CREA0("H")),
+                    arbolito.CREA("j",arbolito.CREA0("I")));
+
 
             System.out.println("Raiz: " + arbolito.RAIZ());
 
@@ -38,7 +45,7 @@ public class Main {
             SwingUtilities.invokeLater(() -> {
                 JFrame ventana = new JFrame("Visualizador de Árbol General - Estructura de Datos");
                 ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                ventana.setSize(950, 650);
+                ventana.setSize(900, 650);
                 ventana.setLocationRelativeTo(null);
                 DibujoArbol panelDibujo = new DibujoArbol(arbolito, arbolito.RAIZ());
                 JScrollPane scrollPane = new JScrollPane(panelDibujo);
